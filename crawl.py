@@ -1,6 +1,8 @@
 from urllib.parse import ParseResult, urlparse, urljoin
 from bs4 import BeautifulSoup
 from typing import TypedDict
+import requests
+
 
 def normalize_url(url: str) -> str:
     parsed: ParseResult = urlparse(url)
@@ -61,3 +63,11 @@ def extract_page_data(html: str, page_url: str) -> PageData:
         "outgoing_links": get_urls_from_html(html, page_url),
         "image_urls": get_images_from_html(html, page_url)
     }
+
+def get_html(url: str) -> str:
+    webpage = requests.get(url, headers={"User-Agent": "BootCrawler/1.0"})
+    if webpage.status_code >= 400:
+        raise Exception("Error: request status code 400+")
+    if "text/html" not in webpage.headers['content-type']:
+        raise Exception("Error: content type is not html text")       
+    return webpage.text
