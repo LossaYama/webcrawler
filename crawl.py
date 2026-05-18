@@ -1,4 +1,4 @@
-from urllib.parse import ParseResult, urlparse
+from urllib.parse import ParseResult, urlparse, urljoin
 from bs4 import BeautifulSoup
 
 def normalize_url(url: str) -> str:
@@ -27,3 +27,19 @@ def get_first_paragraph_from_html(html: str) -> str:
     else:
         return ""
     return paragraph.get_text()
+
+def get_urls_from_html(html: str, base_url:str) -> list[str]:
+    soup = BeautifulSoup(html, features="html.parser")
+    urls = []
+    anchors = soup.find_all('a')
+    for anchor in anchors:
+        urls.append(urljoin(base_url, anchor.get('href')))
+    return urls
+
+def get_images_from_html(html: str, base_url: str) -> list[str]:
+    soup = BeautifulSoup(html, features="html.parser")
+    imgs = []
+    images = soup.find_all('img')
+    for image in images:
+        imgs.append(urljoin(base_url, image.get('src')))
+    return imgs
