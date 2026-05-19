@@ -11,9 +11,10 @@ def main():
     else:
         print(f"starting crawl of: {sys.argv[1]}")
 
-    url = 'https://learnwebscraping.dev/practice/ecommerce/products/ashenfang-longsword-fan-1001/'
-    print(get_html(url))
-
+    data = crawl_page(sys.argv[1])
+    print(f"Pages crawled: {len(data.keys())}")
+    for page in data.values():
+        print(f" - {page['url']}: {page['heading']}\n{page['first_paragraph']}")
 
 if __name__ == "__main__":
     main()

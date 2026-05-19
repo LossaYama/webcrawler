@@ -71,3 +71,27 @@ def get_html(url: str) -> str:
     if "text/html" not in webpage.headers['content-type']:
         raise Exception("Error: content type is not html text")       
     return webpage.text
+
+def crawl_page(base_url, current_url=None, page_data=None):
+    if current_url == None:
+        page_data = {}
+        current_url = base_url
+    if urlparse(base_url).netloc != urlparse(current_url).netloc:
+        return page_data
+    
+    normal_current = normalize_url(current_url)
+    if normal_current in page_data.keys():
+        return page_data
+    
+    try:
+        html = get_html(current_url)
+        page_data[normal_current] = extract_page_data(html, current_url)
+        response_urls = get_urls_from_html(html, current_url)
+        for url in response_urls:
+            crawl_page(base_url, url, page_data)
+    except Exception as e:
+        print(f"{normal_current}: {e}")
+    
+    
+    return page_data
+    
